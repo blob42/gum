@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-var idGen = IdGenerator()
+var idGenerator = genId()
 
 type WorkUnit interface {
 	Run(UnitManager)
@@ -122,15 +122,19 @@ func (m *Manager) Run() {
 	}
 }
 
-func (m *Manager) ShutdownOn(sig os.Signal) {
-	signal.Notify(m.signalIn, sig)
+func (m *Manager) ShutdownOn(sig ...os.Signal) {
 
-	m.shutdownSigs = append(m.shutdownSigs, sig)
+	for _, s := range sig {
+		log.Printf("Registering shutdown signal: %s\n", s)
+		signal.Notify(m.signalIn, s)
+	}
+
+	m.shutdownSigs = append(m.shutdownSigs, sig...)
 }
 
 type IDGenerator func(string) int
 
-func IdGenerator() IDGenerator {
+func genId() IDGenerator {
 	ids := make(map[string]int)
 
 	return func(unit string) int {
@@ -152,7 +156,7 @@ func (m *Manager) AddUnit(unit WorkUnit) {
 	unitType := reflect.TypeOf(unit)
 	unitName := strings.Split(unitType.String(), ".")[1]
 
-	unitId := idGen(unitName)
+	unitId := idGenerator(unitName)
 	unitName += strconv.Itoa(unitId)
 
 	log.Println("Adding unit ", unitName)

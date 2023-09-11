@@ -19,6 +19,7 @@ func (w *Worker) Run(um UnitManager) {
 	// Worker's loop
 	for {
 		select {
+
 		case <-ticker.C:
 			log.Println("tick")
 
@@ -36,14 +37,15 @@ func (w *Worker) Run(um UnitManager) {
 
 func (w *Worker) Shutdown() {
 	// Do shutdown procedure for worker
-	return
 }
 
 func NewWorker() *Worker {
 	return &Worker{}
 }
 
-func DoRunMain(pid chan int, quit chan<- bool) {
+func DoRun(pid chan int,
+				quit chan<- bool,
+				signals ...os.Signal) {
 
 	pid <- os.Getpid()
 
@@ -51,7 +53,7 @@ func DoRunMain(pid chan int, quit chan<- bool) {
 	manager := NewManager()
 
 	// Shutdown all units on SIGINT
-	manager.ShutdownOn(os.Interrupt)
+	manager.ShutdownOn(signals...)
 
 	// NewWorker returns a type implementing WorkUnit interface unit :=
 	worker1 := NewWorker()
@@ -69,14 +71,25 @@ func DoRunMain(pid chan int, quit chan<- bool) {
 
 }
 
+
+
 func TestRunMain(t *testing.T) {
+	signals := map[string]os.Signal{
+		"interrupt":  os.Interrupt,
+	}
 	mainPid := make(chan int, 1)
 	quit := make(chan bool)
-	go DoRunMain(mainPid, quit)
 
-	time.Sleep(3 * time.Second)
+	for name, sig := range signals {
+		t.Logf("Testing signal: %s\n", name)
 
-	syscall.Kill(<-mainPid, syscall.SIGINT)
-	<-quit
-
+		go DoRun(mainPid, quit, sig)
+		time.Sleep(3 * time.Second)
+		syssig, ok := sig.(syscall.Signal)
+		if !ok {
+			t.Fatalf("Could not convert os.Signal to syscall.Signal")
+		}
+		syscall.Kill(<-mainPid, syssig)
+		<-quit
+	}
 }
