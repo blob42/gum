@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-var idGenerator = genId()
+var idGenerator = genID()
 
 // The WorkUnit interface is used to define a unit of work.
 // The Run method will be called in a goroutine.
@@ -139,7 +139,7 @@ func (m *Manager) ShutdownOn(sig ...os.Signal) {
 
 type IDGenerator func(string) int
 
-func genId() IDGenerator {
+func genID() IDGenerator {
 	ids := make(map[string]int)
 
 	return func(unit string) int {
