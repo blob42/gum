@@ -60,8 +60,8 @@ func DoRun(pid chan int,
 	worker2 := NewWorker()
 
 	// Register the unit with the manager
-	manager.AddUnit(worker1)
-	manager.AddUnit(worker2)
+	manager.AddUnit(worker1, "")
+	manager.AddUnit(worker2, "")
 
 	// Start the manager
 	go manager.Run()

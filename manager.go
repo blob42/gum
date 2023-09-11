@@ -1,11 +1,11 @@
 package gum
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
 	"reflect"
-	"strconv"
 	"strings"
 )
 
@@ -149,7 +149,7 @@ func genId() IDGenerator {
 	}
 }
 
-func (m *Manager) AddUnit(unit WorkUnit) {
+func (m *Manager) AddUnit(unit WorkUnit, name string) {
 
 	workUnitManager := &WorkUnitManager{
 		workerQuit: make(chan bool, 1),
@@ -159,10 +159,10 @@ func (m *Manager) AddUnit(unit WorkUnit) {
 	}
 
 	unitType := reflect.TypeOf(unit)
-	unitName := strings.Split(unitType.String(), ".")[1]
-
-	unitId := idGenerator(unitName)
-	unitName += strconv.Itoa(unitId)
+	unitClass := strings.Split(unitType.String(), ".")[1]
+	unitName := fmt.Sprintf("%s[%s", name, unitClass)
+	unitID := idGenerator(unitName)
+	unitName = fmt.Sprintf("%s#%d]", unitName, unitID)
 
 	log.Println("Adding unit ", unitName)
 
