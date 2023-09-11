@@ -11,11 +11,16 @@ import (
 
 var idGenerator = genId()
 
+// The WorkUnit interface is used to define a unit of work.
+// The Run method will be called in a goroutine.
 type WorkUnit interface {
 	Run(UnitManager)
-	Shutdown()
 }
 
+// The UnitManager interface is used to manage a unit of work.
+// The ShouldStop method returns a channel that will be closed when the unit
+// should stop.
+// The Done method should be called when the unit is done.
 type UnitManager interface {
 	ShouldStop() <-chan bool
 	Done()
