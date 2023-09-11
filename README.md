@@ -12,7 +12,7 @@ Features:
 
 ## Overview
 
-A unit is a type that implements `WorkUnit` interface. The `Spawn()` method
+A unit is a type that implements `WorkUnit` interface. The `Run()` method
 of each registered unit is spawned in its own goroutine.
 
 The `Manager` handles communication and synchronized shutdown procedure.
@@ -36,7 +36,7 @@ import (
 type Worker struct{}
 
 // Example loop, will be spwaned inside a goroutine
-func (w *Worker) Spawn(um UnitManager) {
+func (w *Worker) Run(um UnitManager) {
     ticker := time.NewTicker(time.Second)
 
     // Worker's loop
@@ -58,7 +58,7 @@ func (w *Worker) Spawn(um UnitManager) {
 }
 
 func (w *Worker) Shutdown() {
-    // Do shutdown procedure for worker
+    // shutdown procedure for worker
     return
 }
 
@@ -78,8 +78,8 @@ func main() {
     worker2 := NewWorker()
 
     // Register the unit with the manager
-    manager.AddUnit(worker)
-    manager.AddUnit(worker2)
+    manager.AddUnit(worker, "work1")
+    manager.AddUnit(worker2, "work2")
 
     // Run the manager
     go manager.Run()
