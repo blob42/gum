@@ -95,4 +95,8 @@ This repo is a mirror. For any question or issues use the repo hosted at
 [https://git.sp4ke.com/sp4ke/gum.git](https://git.sp4ke.com/sp4ke/gum.git)
 
 
+## TODO:
+- multi platform signal handling
+ - syscall signals on linux
+ - os.Signal on windows
 
