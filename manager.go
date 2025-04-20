@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"reflect"
+	"slices"
 	"strings"
 )
 
@@ -180,10 +181,5 @@ func NewManager() *Manager {
 
 // Test if signal is in array
 func in(arr []os.Signal, sig os.Signal) bool {
-	for _, s := range arr {
-		if s == sig {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(arr, sig)
 }
